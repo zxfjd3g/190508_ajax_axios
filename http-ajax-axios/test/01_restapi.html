@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>rest api 测试</title>
+</head>
+<body>
+
+  <button onclick="testGet()">GET请求</button>
+  <button onclick="testPost()">POST请求</button>
+  <button onclick="testPut()">PUT请求</button>
+  <button onclick="testDelete()">DELETE请求</button>
+  
+<script src="https://cdn.bootcss.com/axios/0.19.0/axios.js"></script>
+<script>
+
+  /* 1. GET请求: 从服务器端获取数据*/
+  function testGet() {
+
+    // axios.get('http://localhost:3000/posts')
+    // axios.get('http://localhost:3000/posts/1') // 获取id为1的对象
+    // axios.get('http://localhost:3000/posts?id=1&id=2') // 获取id为1或2的数组
+    // axios.get('http://localhost:3000/posts?title=json-server&author=typicode')
+  }
+
+  /* 2. POST请求: 向服务器端添加新数据*/
+  function testPost() {
+    axios.post('http://localhost:3000/posts', {title: '我的文章标题', author: 'typicode'}) // 保存数据
+  }
+
+  /* 3. PUT请求: 更新服务器端已经数据 */
+  function testPut() {
+    axios.put('http://localhost:3000/posts/2', {title: '我的文章标题22', author: 'typicode2'})
+  }
+  
+  /* 4. DELETE请求: 删除服务器端数据 */
+  function testDelete() {
+    axios.delete('http://localhost:3000/posts/2')
+  }
+  
+</script>
+</body>
+</html>
+
+<!-- 
+axios({
+  method: 'GET/POST/PUT/DELETE',
+  params: {name: 'tom', pwd: '123'}, // url携带的query参数
+  data: {name: 'tom', pwd: '123'}, // 请求体参数
+}): 发送任何类型请求
+
+axios.get/delete(url, {
+  params:  {name: 'tom', pwd: '123'}
+}): 发get请求
+
+axios.post/put(url, {name: 'tom', pwd: '123'}, {})
+-->

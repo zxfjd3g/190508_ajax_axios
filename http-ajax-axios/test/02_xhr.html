@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <button onclick="testGet()">发送GET请求</button><br>
+  <button onclick="testPost()">发送POST请求</button><br>
+  <button onclick="testPut()">发送PUT请求</button><br>
+  <button onclick="testDelete()">发送Delete请求</button><br>
+
+  <script>
+
+    function testGet() {
+      axios({
+        url: 'http://localhost:3000/comments',
+        // url: 'http://localhost:3000/comments2',
+        params: {id: 3},
+      }).then(response => {
+        console.log('get success', response.data, response)
+      }).catch(error => {
+        alert(error.message)
+      })
+    }
+
+    function testPost() {
+      axios({
+        url: 'http://localhost:3000/comments',
+        // url: 'http://localhost:3000/comments2',
+        method: 'POST',
+        data: { body: 'aaaa', postId: 2 }
+      }).then(response => {
+        console.log('post success', response.data, response)
+      }).catch(error => {
+        alert(error.message)
+      })
+    }
+
+    function testPut() {
+      axios({
+        url: 'http://localhost:3000/comments/3',
+        // url: 'http://localhost:3000/comments/39',
+        method: 'put',
+        data: {body: 'abcdefg', "postId": 2}
+      }).then(response => {
+        console.log('put success', response.data, response)
+      }).catch(error => {
+        alert(error.message)
+      })
+    }
+    
+    function testDelete() {
+      axios({
+        url: 'http://localhost:3000/comments/1',
+        method: 'delete',
+        params: {
+          body: 'some comment'
+        }
+      }).then(response => {
+        console.log('delete success', response.data, response)
+      }).catch(error => {
+        alert(error.message)
+      })
+    }
+
+
+    /*
+    使用XHR封装发送ajax请求的通用函数
+      返回值: promise
+      参数为配置对象
+        url: 请求地址
+        params: 包含所有query请求参数的对象 {name: tom, age: 12} ==> name=tom&age=12
+        data: 包含所有请求体参数数据的对象
+        method: 为请求方式
+    */
+    function axios({url, method='GET', params={}, data={}}) {
+
+      method = method || 'GET'
+      method = method.toUpperCase()
+
+      // 将params中的参数属性拼接到url上   
+      // {name: tom: pwd: 123}  ===> queryStr=name=tom&pwd=123
+      // url + ? + queryStr
+      let queryStr = ''
+      Object.keys(params).forEach(key => {
+        // &pwd=123
+          queryStr += '&' + key + '=' + params[key]
+      })
+      // '&name=tom&pwd=123' 或者 ''
+      if (queryStr) {
+        queryStr = queryStr.substring(1) // 'name=tom&pwd=123'
+        url += '?' + queryStr  // /user?name=tom&pwd=123
+      }
+
+      
+      return new Promise((resolve, reject) => {
+        // 创建XHR对象
+        const request = new XMLHttpRequest()
+
+        // 打开连接(初始化请求对象)
+        request.open(method, url, true)
+
+        // 设置响应数据类型 ==> 自动解析json文本为js对象/数组, 保存给response属性上
+        request.responseType = 'json'
+
+        // 绑定监视request的状态改变的监听
+        request.onreadystatechange = function () {
+          // 如果请求还没有完成, 直接结束
+          if (request.readyState!==4) {
+            return
+          }
+
+          const {status, statusText} = request
+          // 如果成功了, 取出数据封装成成功的响应数据对象response, 调用resolve(response)
+          if (status>=200 && status<300) { // 在[200, 300)
+            const response = {
+              // data: JSON.parse(request.response),
+              data: request.response,
+              status,
+              statusText
+            }
+            resolve(response)
+          } else {
+             // 如果失败了, 封装失败相关信息成error对象, 调用reject(error)
+             reject(new Error('request error status is ' + status))
+          }
+        }
+
+        if (method==='GET' || method==='DELETE') {
+          // 发送请求
+          request.send(null)
+        } else { // POST/PUT
+          // 设置请求头
+          request.setRequestHeader('Content-Type', 'application/json;charset=utf-8')
+          // 发送请求
+          request.send(JSON.stringify(data))
+        }
+        
+      })
+    }
+
+
+    /*
+    使用XHR封装发送ajax请求的通用函数
+      返回值: promise
+      参数为配置对象
+        url: 请求地址
+        params: 包含所有query请求参数的对象   {name: tom, age: 12}  ==> name=tom&age=12
+        data: 包含所有请求体参数数据的对象
+        method: 为请求方式
+    */
+    function axios2({url, method="GET", data={}, params={}}) {
+      return new Promise((resolve, reject) => {
+
+        // 将请求方式转换为大写
+        method = method.toUpperCase()
+
+        // 创建XHR对象
+        const request = new XMLHttpRequest()
+
+        // 根据params生成请求参数字符串, 并拼接到url上
+        // {name: tom, age: 12} ==> name=tom&age=12
+        let queryStr = ''
+        Object.keys(params).forEach(key => {
+          const value = params[key]
+          queryStr += `&${key}=${value}`
+        }) // &name=tom&age=12
+        if (queryStr) {
+          queryStr = queryStr.substring(1) // name=tom&age=12
+          url += '?' + queryStr
+        }
+
+        // 打开连接(初始化一个请求)
+        request.open(method, url, true) // 还没有发请求
+
+        // 指定响应数据必须是json ==> 得到的响应体数据就是已解析好的js对象/数组
+        request.responseType = 'json'
+
+        // 绑定监视状态改变的监听
+        request.onreadystatechange = () => {
+          // 如果请求还未完成, 直接结束
+          if (request.readyState!==4) {
+            return
+          }
+
+          // 请求完成: 成功
+          if (request.status>=200 && request.status<300) {
+            // 准备一个响应数据对象
+            const response = {
+              data: request.response,
+              status: request.status,
+              statusText: request.statusText
+            }
+            // 让请求的promise确定为成功
+            resolve(response)
+          } else { // 请求完成: 失败
+            
+            // 准备一个error对象
+            const error = new Error('request error status: ' + request.status)
+            // 让请求的promise确定为失败
+            reject(error)
+          }
+        }
+
+        // 发送请求
+        if (method==='POST' || method==='PUT') { // POST请求
+          // 设置请求头: 指定请求体为json格式
+          request.setRequestHeader('Content-Type', 'application/json;charset=utf-8')
+          // 发送带数据的请求(数据必须是json)
+          request.send(JSON.stringify(data))
+        } else { // GET/DELETE请求
+          // 发送不带数据的请求请求
+          request.send(null)
+        }
+      })
+    }
+
+  </script>
+</body>
+</html>
