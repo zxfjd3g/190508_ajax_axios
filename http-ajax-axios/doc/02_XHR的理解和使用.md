@@ -15,7 +15,7 @@
         ajax请求: 浏览器不会对界面进行任何更新操作, 只是调用监视的回调函数并传入响应相关数据
 
 ## 4. 使用语法
-    XMLHttpRequest(): 创建XHR对象的构造函数
+    new XMLHttpRequest(): 创建XHR对象的构造函数
     status: 响应状态码值, 比如200, 404
     statusText: 响应状态文本
     readyState: 标识请求状态的只读属性
@@ -32,7 +32,7 @@
     onerror: 绑定请求网络错误的监听
     open(): 初始化一个请求, 参数为: (method, url[, async])
     send(data): 发送请求
-    abort(): 中断请求
+    abort(): 中断请求(未完成的)
     getResponseHeader(name): 获取指定名称的响应头值
     getAllResponseHeaders(): 获取所有响应头组成的字符串
     setRequestHeader(name, value): 设置请求头
