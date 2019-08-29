@@ -41,8 +41,8 @@
 ### 1). 特点
     函数的返回值为promise, 成功的结果为response, 异常的结果为error
     能处理多种类型的请求: GET/POST/PUT/DELETE
-    函数的参数为一个配置对象
-    响应json数据自动解析为了js
+    函数的参数为一个配置对象: {url, method, params, data}
+    响应json数据自动解析为了js对象/数组
 
 ### 2) 编码实现
     /* 

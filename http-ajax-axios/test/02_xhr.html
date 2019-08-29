@@ -17,7 +17,6 @@
     function testGet() {
       axios({
         url: 'http://localhost:3000/comments',
-        // url: 'http://localhost:3000/comments2',
         params: {id: 3},
       }).then(response => {
         console.log('get success', response.data, response)
@@ -29,7 +28,6 @@
     function testPost() {
       axios({
         url: 'http://localhost:3000/comments',
-        // url: 'http://localhost:3000/comments2',
         method: 'POST',
         data: { body: 'aaaa', postId: 2 }
       }).then(response => {
@@ -54,10 +52,10 @@
     
     function testDelete() {
       axios({
-        url: 'http://localhost:3000/comments/1',
+        url: 'http://localhost:3000/comments/2',
         method: 'delete',
         params: {
-          body: 'some comment'
+          body: 'some comment22'
         }
       }).then(response => {
         console.log('delete success', response.data, response)
@@ -66,81 +64,64 @@
       })
     }
 
+    function qs(data) {
+      let queryStr = ''
+      Object.keys(data).forEach(key => {
+        const value = data[key]
+        queryStr += `${key}=${value}&`
+      })
+      if (queryStr) { // 如果有参数
+        queryStr = queryStr.substring(0, queryStr.length-1)
+      }
+      return queryStr
+    }
 
     /*
     使用XHR封装发送ajax请求的通用函数
       返回值: promise
       参数为配置对象
         url: 请求地址
-        params: 包含所有query请求参数的对象 {name: tom, age: 12} ==> name=tom&age=12
+        params: 包含所有query请求参数的对象   {name: tom, age: 12}  ==> name=tom&age=12
         data: 包含所有请求体参数数据的对象
         method: 为请求方式
     */
     function axios({url, method='GET', params={}, data={}}) {
 
-      method = method || 'GET'
       method = method.toUpperCase()
 
-      // 将params中的参数属性拼接到url上   
-      // {name: tom: pwd: 123}  ===> queryStr=name=tom&pwd=123
-      // url + ? + queryStr
-      let queryStr = ''
+      // 拼接params参数
+      let queryStr = ''   // {name: tom, age: 12} 
       Object.keys(params).forEach(key => {
-        // &pwd=123
-          queryStr += '&' + key + '=' + params[key]
-      })
-      // '&name=tom&pwd=123' 或者 ''
-      if (queryStr) {
-        queryStr = queryStr.substring(1) // 'name=tom&pwd=123'
-        url += '?' + queryStr  // /user?name=tom&pwd=123
+        const value = params[key]
+        queryStr += `${key}=${value}&`
+      }) // name=tom&age=12&
+      if (queryStr) { // 如果有参数
+        queryStr = queryStr.substring(0, queryStr.length-1)
+        url += '?' + queryStr
       }
 
-      
-      return new Promise((resolve, reject) => {
-        // 创建XHR对象
-        const request = new XMLHttpRequest()
+      // 返回值: promise
+      return new Promise((resolve, reject) => { // 执行器
+        
+        // 执行异步操作(发ajax请求)
+        const xhr = new XMLHttpRequest()
+        xhr.open(method, url, true)
 
-        // 打开连接(初始化请求对象)
-        request.open(method, url, true)
-
-        // 设置响应数据类型 ==> 自动解析json文本为js对象/数组, 保存给response属性上
-        request.responseType = 'json'
-
-        // 绑定监视request的状态改变的监听
-        request.onreadystatechange = function () {
-          // 如果请求还没有完成, 直接结束
-          if (request.readyState!==4) {
-            return
-          }
-
-          const {status, statusText} = request
-          // 如果成功了, 取出数据封装成成功的响应数据对象response, 调用resolve(response)
-          if (status>=200 && status<300) { // 在[200, 300)
-            const response = {
-              // data: JSON.parse(request.response),
-              data: request.response,
-              status,
-              statusText
-            }
-            resolve(response)
-          } else {
-             // 如果失败了, 封装失败相关信息成error对象, 调用reject(error)
-             reject(new Error('request error status is ' + status))
-          }
-        }
-
-        if (method==='GET' || method==='DELETE') {
-          // 发送请求
-          request.send(null)
-        } else { // POST/PUT
-          // 设置请求头
-          request.setRequestHeader('Content-Type', 'application/json;charset=utf-8')
-          // 发送请求
-          request.send(JSON.stringify(data))
+        if (method==='GET') {
+          xhr.send()
+        } else {
+          // xhr.setRequestHeader('Content-Type', 'application/json')
+          // xhr.send(JSON.stringify(data))
+          xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+          xhr.send(qs(data))
         }
         
+        // 成功了, 调用resolve(value)
+
+        // 失败了, 调用reject(reason)
       })
     }
+
 
 
     /*
