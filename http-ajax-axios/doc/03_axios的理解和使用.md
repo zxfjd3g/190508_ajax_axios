@@ -6,9 +6,10 @@
     react/vue官方都推荐使用axios发ajax请求
 
 ## 3. axios的特点
-    基本promise的异步ajax请求库
-    浏览器端/node端都可以使用
-    支持请求／响应拦截器
+    基于promise的异步ajax请求库
+    浏览器端: XHR
+    node端都可以使用: http包
+    支持请求／响应拦截
     支持请求取消
     请求/响应数据转换
     批量发送多个请求

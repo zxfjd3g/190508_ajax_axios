@@ -20,38 +20,37 @@
       需求: 项目中有部分接口需要的配置与另一部分接口需要的配置不太一样, 如何处理
       解决: 创建2个新axios, 每个都有自己特有的配置, 分别应用到不同要求的接口请求中
   */
-
-  axios.get = function (url, params, config) {
-    config = config || {}
-    config.params = params || {}
-    return axios({
-      url,
-      config
-    })
-  }
-
-  axios.defaults.baseURL = 'http://localhost:4000'
+  const baseURL = 'http://localhost:4000'
+  axios.defaults.baseURL = baseURL
+  axios({
+    url: '/posts',
+    params: {id: 2}
+  })
+  axios.get('/posts', {
+    params: {id: 3}
+  })
 
   axios({
-    method: 'GET',
-    url: '/get1',
-    params: {
-      id: 2
-    },
+    url: '/posts',
+    params: {id: 2}
   })
 
-  var instance = axios.create({
-    baseURL: 'http://localhost:5000'
+  const instance = axios.create({
+    baseURL: 'http://localhost:3000'
   })
   instance({
-    method: 'GET',
-    url: '/get1',
-    params: {
-      id: 3
-    },
+    url: '/posts',
+    params: {id: 2}
   })
-  console.log(axios)
-  console.log(instance)
+  instance.get('/posts', {
+    params: {id: 3}
+  })
+
+  instance({
+    url: '/posts',
+    params: {id: 2}
+  })
+
 
 </script>
 </body>

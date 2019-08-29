@@ -12,11 +12,13 @@
   <button onclick="testPut()">发送PUT请求</button><br>
   <button onclick="testDelete()">发送Delete请求</button><br>
 
+  <script src="https://cdn.bootcss.com/qs/6.8.0/qs.js"></script>
   <script>
 
     function testGet() {
       axios({
         url: 'http://localhost:3000/comments',
+        // url: 'http://localhost:3000/comments2',
         params: {id: 3},
       }).then(response => {
         console.log('get success', response.data, response)
@@ -28,6 +30,7 @@
     function testPost() {
       axios({
         url: 'http://localhost:3000/comments',
+        // url: 'http://localhost:3000/comments2',
         method: 'POST',
         data: { body: 'aaaa', postId: 2 }
       }).then(response => {
@@ -54,9 +57,9 @@
       axios({
         url: 'http://localhost:3000/comments/2',
         method: 'delete',
-        params: {
-          body: 'some comment22'
-        }
+        /* params: {
+          body: 'aaa'
+        } */
       }).then(response => {
         console.log('delete success', response.data, response)
       }).catch(error => {
@@ -64,7 +67,7 @@
       })
     }
 
-    function qs(data) {
+    function qs2(data) {
       let queryStr = ''
       Object.keys(data).forEach(key => {
         const value = data[key]
@@ -107,18 +110,49 @@
         const xhr = new XMLHttpRequest()
         xhr.open(method, url, true)
 
-        if (method==='GET') {
+        // 绑定监听
+        xhr.onreadystatechange = () => {
+          if (xhr.readyState!=4) {
+            return
+          }
+          const status = xhr.status
+          if (status>=200 && status<300) {
+            // 成功了, 调用resolve(value)
+            const response = {
+              data: JSON.parse(xhr.response),
+              status,
+              statusText: xhr.statusText
+            }
+            resolve(response)
+          } else {
+            // 失败了, 调用reject(reason)
+            const error = new Error('request error status=' + status)
+            reject(error)
+          }
+        }
+
+        if (method==='GET' || method==='DELETE') { // get/delete请求
           xhr.send()
-        } else {
+        } else { // post/put
           // xhr.setRequestHeader('Content-Type', 'application/json')
           // xhr.send(JSON.stringify(data))
           xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
-          xhr.send(qs(data))
+          xhr.send(qs2(data))
+          // xhr.send(qs.stringify(data))
         }
         
-        // 成功了, 调用resolve(value)
+        
+      })
+    }
 
-        // 失败了, 调用reject(reason)
+    axios.get = function (url, config) {
+      axios({...config, url})
+    }
+    axios.post = function (url, data, config) {
+      axios({
+        ...config,
+        url,
+        data
       })
     }
 
