@@ -55,6 +55,7 @@
   instance.interceptors.response.use(
     response => {
       console.log('res interceptor2 onResolved()', response)
+      // return response.data
       return response
     },
     error => {

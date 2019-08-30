@@ -71,13 +71,13 @@
 ### 11). error的整体结构
     {
         message,
-        code,
         request,
         response
     }
+    error.response.status
 
 ### 12). config是如何起作用的?
-    通过拦截器后传递给xhrAdapter(config), 内部利用config, 对XHR对象发请求进行相应的设置
+    通过拦截器后传递xh给rAdapter(config), 内部利用config, 对XHR对象发请求进行相应的设置
 
 ### 13). 如何取消已经发送的请求?
 

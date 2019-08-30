@@ -13,37 +13,48 @@
 
   <script src="https://cdn.bootcss.com/axios/0.19.0/axios.js"></script>
   <script>
-    const CancelToken = axios.CancelToken
-    let cancel
+    let axiosCancel
     function getProducts1() {
+      if (typeof axiosCancel==='function') {
+        axiosCancel()
+      }
       axios({
         url: 'http://localhost:4000/products1',
-        cancelToken: new CancelToken(c => {
-          cancel = c
+        cancelToken: new axios.CancelToken((cancel) => { // cancel: 用于取消当前请求的函数
+          // 保存用于取消请求的函数
+          axiosCancel = cancel
         })
       }).then(response => {
+        axiosCancel = null
         console.log('products1 success', response.data)
       }).catch(error => {
+        axiosCancel = null
         if (axios.isCancel(error)) {
-          console.log('products1 request canceled', error.message)
+          console.log('products1 request cancel', error.message)
         } else {
           console.log('products1 Request error', error.message)
         }
+       
       })
     }
 
     function getProducts2() {
+      if (typeof axiosCancel==='function') {
+        axiosCancel()
+      }
       axios({
         url: 'http://localhost:4000/products2',
-        cancelToken: new CancelToken(c => {
-          cancel = c
+        cancelToken: new axios.CancelToken((cancel) => { // cancel: 用于取消当前请求的函数
+          // 保存用于取消请求的函数
+          axiosCancel = cancel
         })
       }).then(response => {
         cancel = null
         console.log('products2 success', response.data)
       }).catch(error => {
+        axiosCancel = null
         if (axios.isCancel(error)) {
-          console.log('products2 Request canceled', error.message)
+          console.log('products2 request cancel', error.message)
         } else {
           console.log('products2 Request error', error.message)
         }
@@ -51,8 +62,8 @@
     }
 
     function cancelReq() {
-      if (typeof cancel === 'function') {
-        cancel('Operation canceled by the user.')
+      if (typeof axiosCancel === 'function') {
+        axiosCancel('强制取消请求')
       }
       
     }
