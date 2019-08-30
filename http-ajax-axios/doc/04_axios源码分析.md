@@ -77,9 +77,18 @@
     error.response.status
 
 ### 12). config是如何起作用的?
-    通过拦截器后传递xh给rAdapter(config), 内部利用config, 对XHR对象发请求进行相应的设置
+    request(config) ==> 请求拦截器 ==> dispatchRequest(config) ==> xhrAdapter(config)
+    xhrAdapter(config)内部利用config, 对XHR对象发请求进行相应的设置
 
-### 13). 如何取消已经发送的请求?
+### 13). 如何取消已经发送但未完成的请求?
+    发请求前配置cancelToken对象, 生成用于取消请求的cancel函数
+        创建一个用于在请求未完成前中断请求的promise
+        在cancel函数中调用resolve()让promise变为成功以处理中断请求
+        调用resolve(cacel对象)
+    在xhrAdapter函数中
+        判断如果配置了cancelToken, 得到promise对象并指定成功的回调函数
+        在成功的回调函数中abort请求
+        调用reject(cancel对象), 让请求流程进入失败
 
 
 
