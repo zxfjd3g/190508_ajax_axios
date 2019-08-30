@@ -70,6 +70,7 @@ module.exports = function dispatchRequest(config) {
   return adapter(config).then(function onAdapterResolution(response) {
     throwIfCancellationRequested(config);
 
+    /* 对成功响应数据进行转换处理 */
     // Transform response data
     response.data = transformData(
       response.data,
@@ -84,6 +85,7 @@ module.exports = function dispatchRequest(config) {
 
       // Transform response data
       if (reason && reason.response) {
+        /* 对失败响应数据进行转换处理 */
         reason.response.data = transformData(
           reason.response.data,
           reason.response.headers,
