@@ -35,7 +35,7 @@
         都有发特定请求的各种方法: get()/post()/put()/delete()
         都有默认配置和拦截器的属性: defaults/interceptors
     不同:
-        默认匹配的值很可能不一样
+        默认配置的值很可能不一样
         instance没有axios后面添加的一引起方法: create()/CancelToken()/all()
 
 ### 4). axios运行的整体流程

@@ -20,38 +20,98 @@
     baseURL: 'http://localhost:3000'
   })
 
-  instance.interceptors.request.use(config => {
-    console.log('request interceptor1')
-    return config
-  })
-
-  instance.interceptors.request.use(config => {
-    console.log('request interceptor2')
-    return config
-  })
-
-  instance.interceptors.response.use(response => {
-    console.log('response interceptor1')
-    return response
-  })
-  instance.interceptors.response.use(response => {
-    console.log('response interceptor2')
-    return response
-  })
-
+  // 指定请求拦截器
+  instance.interceptors.request.use(
+    config => {
+      console.log('req interceptor1 onResolved()', config)
+      return config
+    },
+    error => {
+      console.log('req interceptor1 onRejected()', error)
+    },
+  )
+  instance.interceptors.request.use(
+    config => {
+      console.log('req interceptor2 onResolved()', config)
+      return config
+    },
+    error => {
+      console.log('req interceptor2 onRejected()', error)
+    },
+  )
   
+  // 指定响应拦截器
+  instance.interceptors.response.use(
+    response => {
+      console.log('res interceptor1 onResolved()', response)
+      return response
+    },
+    error => {
+      console.log('res interceptor1 onRejected()', error)
+      // throw error
+      return Promise.reject(error)
+    },
+  )
+  instance.interceptors.response.use(
+    response => {
+      console.log('res interceptor2 onResolved()', response)
+      return response
+    },
+    error => {
+      console.log('res interceptor2 onRejected()', error)
+      alert('请求失败, reason: ' + error.message)
+      return Promise.reject(error)
+      // return new Promise(() => {}) // 返回一个pending的promise  中断promise链
+    },
+  )
+
   instance({
-    url: '/posts',
-    // url: '/posts2',
+    // url: '/posts',
+    url: '/posts2',
     params: {
       id: 2
     },
-    data: 'name=tom'
   }).then(response => {
     console.log(response.data)
   }, error => {
     alert(error.message)
   })
+
+
+ /*  Promise.resolve({url: '/login'}})
+    .then((config) => {return config} )
+    .then((config) => {})
+    
+    .then((config) => {
+      return new Promise((resolve, reject) => {
+          xhr.send()
+          // resolve(response)
+          reject(error)
+      })
+    })
+    
+    .then((reponse) => {
+      return response
+    }, error => {
+
+    })
+    .then((reponse) => {
+      return response
+    })
+   
+    .then(response => {}) */
+
+    /* 
+    .then返回的promise的结果状态由什么决定?
+    .then指定的回调函数执行的结果决定
+      跟执行哪个哪个回调函数无关
+      失败: 
+        throw xxx     xxx
+        return 最终失败的promise  这个promise失败的原因值
+      成功
+        return 正常值(undefined)    返回的值
+        return 成功的promise  这个promise成功的结果值
+    */
 </script>
 </body>
 </html>
