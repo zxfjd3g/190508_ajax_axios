@@ -54,9 +54,11 @@
             配置cancelToken对象
             缓存用于取消请求的cancel函数
             在后面特定时机调用cancel函数取消请求
-            在错误回调中判断如果error是cancel, 做相应处理
+            在错误回调中判断如果error是cancel对象, 做相应处理
         b. 实现功能
             点击按钮, 取消某个正在请求中的请求
             在请求一个接口前, 取消前面一个未完成的请求
 
+new Promise((resolve, reject) => {})
+new CancelToken((cancel) => {})
 
